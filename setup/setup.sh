@@ -85,14 +85,8 @@ func_check_env(){
     func_python_deps
   fi
 
-  # Check If Wine Ruby Is Already Installed
-  if [ -f ~/.wine/drive_c/Ruby187/bin/ruby.exe ]; 
-    then
-    echo ' [*] Wine Ruby Already Installed... Skipping.'
-  else
-    echo ' [*] Initializing Wine Ruby Dependencies Installation'
-    func_ruby_deps
-  fi
+  # install ruby dependencies if needed
+  func_ruby_deps
 
   # finally, update the config
   func_update_config
@@ -199,34 +193,51 @@ func_python_deps(){
 # Install Wine Ruby Dependencies
 func_ruby_deps(){
 
-  # Install Wine Ruby and Dependencies
-  # Download required files, doing no check cert because wget is having an issue with our wildcard cert
-  # if you're reading this, and actually concerned you might be mitm, use a browser and just download these
-  # files and then just comment these next two lines out :)
-  echo ' [*] Downloading Ruby Setup Files From http://www.veil-framework.com'
-  wget -q https://www.veil-framework.com/InstallMe/rubyinstaller-1.8.7-p371.exe --no-check-certificate
-  wget -q https://www.veil-framework.com/InstallMe/ruby_required.zip --no-check-certificate
+  # Check If Wine Ruby Is Already Installed
+  if [ -f ~/.wine/drive_c/Ruby187/bin/ruby.exe ]; 
+    then
+    echo ' [*] Wine Ruby Already Installed... Skipping.'
+  else
+    echo ' [*] Initializing Wine Ruby Dependencies Installation'
+    # Install Wine Ruby and Dependencies
+    # Download required files, doing no check cert because wget is having an issue with our wildcard cert
+    # if you're reading this, and actually concerned you might be mitm, use a browser and just download these
+    # files and then just comment these next two lines out :)
+    echo ' [*] Downloading Ruby Setup Files From http://www.veil-framework.com'
+    wget -q https://www.veil-framework.com/InstallMe/rubyinstaller-1.8.7-p371.exe --no-check-certificate
+    wget -q https://www.veil-framework.com/InstallMe/ruby_required.zip --no-check-certificate
 
-  # install Ruby under Wine
-  echo ' [*] Installing Ruby under Wine'
-  wine rubyinstaller-1.8.7-p371.exe /silent
+    # install Ruby under Wine
+    echo ' [*] Installing Ruby under Wine'
+    wine rubyinstaller-1.8.7-p371.exe /silent
+    
+    # unzip the Ruby dependencies
+    echo ' [*] Uncompressing Ruby Setup Archive'
+    unzip -o -d /root/.wine/drive_c/Ruby187/lib/ruby/gems/ ruby_required.zip
 
-  # fetch the OCRA gem
-  echo ' [*] Fetching and installing Ruby OCRA gem'
-  gem fetch -v 1.3.0 ocra
+    rm rubyinstaller-1.8.7-p371.exe
+    rm ruby_required.zip
+  fi
 
-  # install the OCRA gem under Wine
-  wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/gem install ocra-1.3.0.gem
+  if [ ! -d ~/.wine/drive_c/Ruby187/lib/ruby/gems/1.8/gems/ocra-1.3.0 ]; then
+    # fetch the OCRA gem
+    echo ' [*] Fetching and installing Ruby OCRA gem'
+    gem fetch -v 1.3.0 ocra
 
-  # unzip the Ruby dependencies
-  echo ' [*] Uncompressing Ruby Setup Archive'
-  unzip -o -d /root/.wine/drive_c/Ruby187/lib/ruby/gems/ ruby_required.zip
+    # install the OCRA gem under Wine
+    wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/gem install ocra-1.3.0.gem
+    rm ocra-1.3.0.gem
+  fi
 
-  # Clean Up Setup Files
-  echo ' [*] Cleaning Up Ruby Setup Files'
-  rm rubyinstaller-1.8.7-p371.exe
-  rm ruby_required.zip
-  rm ocra-1.3.0.gem
+  if [ ! -d ~/.wine/drive_c/Ruby187/lib/ruby/gems/1.8/gems/httpclient-2.2.4 ]; then
+    # fetch the HTTPclient gem
+    echo ' [*] Fetching and installing Ruby HTTPClient gem'
+    gem fetch -v 2.2.4 httpclient
+
+    # install the HTTPclient gem under Wine
+    wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/gem install httpclient-2.2.4.gem
+    rm httpclient-2.2.4.gem
+  fi
 }
 
 # Update Veil Config
