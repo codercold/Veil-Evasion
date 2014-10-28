@@ -11,7 +11,7 @@ func_title(){
 
   # Echo Title
   echo '=========================================================================='
-  echo ' Veil-Evasion Setup Script | [Updated]: 09.09.2014'
+  echo ' Veil-Evasion Setup Script | [Updated]: 10.28.2014'
   echo '=========================================================================='
   echo ' [Web]: https://www.veil-framework.com | [Twitter]: @VeilFramework'
   echo '=========================================================================='
@@ -226,6 +226,7 @@ func_ruby_deps(){
 
     # install the OCRA gem under Wine
     wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/gem install ocra-1.3.0.gem
+    sleep 5
     rm ocra-1.3.0.gem
   fi
 
@@ -235,7 +236,8 @@ func_ruby_deps(){
     gem fetch -v 2.2.4 httpclient
 
     # install the HTTPclient gem under Wine
-    wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/gem install httpclient-2.2.4.gem
+    wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/gem install httpclient-2.2.4.gem &2>/dev/null
+    sleep 5
     rm httpclient-2.2.4.gem
   fi
 }
